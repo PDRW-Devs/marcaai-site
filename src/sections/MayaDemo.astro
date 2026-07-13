@@ -1,0 +1,248 @@
+﻿---
+// Conversas simuladas da Maya em deck 3D: o card ativo fica na frente e os
+// outros dois atrás, desfocados. Setas passam manualmente; ao fim de cada
+// conversa animada, avança sozinho após 2s — a menos que o mouse esteja
+// sobre o deck. Sem JS/reduced-motion: os três chats empilham estáticos.
+const ticksSvg = `<svg class="chat-ticks h-4 w-4" viewBox="0 0 18 12" fill="currentColor" aria-hidden="true"><path d="M12.6.6 6.1 8.2 3.4 5.5l-1.3 1.3 4 4L13.9 1.9 12.6.6Z"/><path d="M17.3.6l-6.5 7.6-.7-.7-1.2 1.4 1.9 1.9L18.6 1.9 17.3.6Z"/></svg>`;
+---
+
+<section id="maya" class="overflow-hidden bg-bg py-24 md:py-36">
+  <div
+    class="mx-auto grid max-w-6xl items-center gap-14 px-5 md:grid-cols-[1fr_1.1fr] md:gap-20 md:px-8"
+  >
+    <div>
+      <p class="mb-4 font-mono text-sm tracking-widest text-brand uppercase" data-reveal>
+        Conheça a Maya
+      </p>
+      <h2 class="text-3xl md:text-5xl" data-reveal>
+        Uma recepcionista de verdade. Que por acaso é uma IA.
+      </h2>
+      <p class="mt-6 text-lg text-muted" data-reveal>
+        A Maya entende o que o cliente quer, pergunta só o que falta e oferece horários
+        reais da sua agenda. Ela marca, cancela e remarca de verdade — e fala como gente,
+        não como robô.
+      </p>
+      <ul class="mt-8 space-y-4" data-reveal>
+        <li class="flex items-start gap-3">
+          <svg class="mt-1 h-5 w-5 shrink-0 text-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          <span><strong class="font-medium">Nunca inventa</strong> horário, serviço ou preço — consulta a agenda real.</span>
+        </li>
+        <li class="flex items-start gap-3">
+          <svg class="mt-1 h-5 w-5 shrink-0 text-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          <span><strong class="font-medium">Só confirma quando marcou</strong> — se não agendou, não diz que agendou.</span>
+        </li>
+        <li class="flex items-start gap-3">
+          <svg class="mt-1 h-5 w-5 shrink-0 text-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          <span><strong class="font-medium">Sabe a hora de chamar você</strong> — assunto delicado vai para um humano.</span>
+        </li>
+      </ul>
+    </div>
+
+    <div data-chat-widget class="relative">
+      {/* rótulo flutuante do exemplo ativo (fade in/out na troca) */}
+      <p
+        data-chat-label
+        aria-live="polite"
+        class="chat-label mb-5 items-center justify-center gap-2.5"
+      >
+        <span class="h-2 w-2 rounded-full bg-brand" aria-hidden="true"></span>
+        <span data-chat-label-text class="font-display text-xl font-semibold text-brand md:text-2xl"
+          >Agendamento inteligente</span
+        >
+      </p>
+
+      <div data-chat-deck class="chat-deck">
+        {/* ---------- card 1: agendamento ---------- */}
+        <div
+          data-chat-card="agendamento" data-chat-title="Agendamento inteligente"
+          class="chat-card is-front overflow-hidden rounded-3xl border border-line bg-bg shadow-[0_24px_60px_-30px_rgba(17,24,39,0.35)]"
+          role="figure"
+          aria-label="Conversa simulada: a Maya agenda um horário pelo WhatsApp"
+        >
+          <div class="flex items-center gap-3 bg-wa-panel px-4 py-3">
+            <img src="/maya.svg" alt="" width="44" height="44" class="h-11 w-11 rounded-full" aria-hidden="true" />
+            <div class="flex-1">
+              <p class="leading-tight font-medium">Maya</p>
+              <p data-chat-status class="text-xs text-muted">online</p>
+            </div>
+            <svg class="h-5 w-5 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg>
+            <svg class="h-5 w-5 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <svg class="h-5 w-5 text-muted" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+          </div>
+
+          <div data-chat-panel="agendamento" class="chat-area flex min-h-[380px] flex-col justify-start gap-2 px-4 py-5 sm:px-6">
+            <div data-chat-bubble class="chat-bubble chat-bubble-client">
+              Oi! Tem horário pra corte + barba amanhã à tarde?
+              <span class="chat-meta">16:29 <Fragment set:html={ticksSvg} /></span>
+            </div>
+            <div data-chat-bubble data-from="maya" class="chat-bubble chat-bubble-maya">
+              <span class="chat-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <div class="chat-text">
+                Oi! Tenho sim. Amanhã à tarde o Vinícius tem <strong>14h30</strong> e
+                <strong>17h</strong>. Qual fica melhor pra você?
+                <span class="chat-meta">16:30</span>
+              </div>
+            </div>
+            <div data-chat-bubble class="chat-bubble chat-bubble-client">
+              Pode ser 14h30
+              <span class="chat-meta">16:31 <Fragment set:html={ticksSvg} /></span>
+            </div>
+            <div data-chat-bubble data-from="maya" class="chat-bubble chat-bubble-maya">
+              <span class="chat-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <div class="chat-text">
+                Fechado! Corte + barba <strong>amanhã às 14h30</strong> com o Vinícius. Te
+                mando um lembrete antes.
+                <span class="chat-meta">16:31</span>
+              </div>
+            </div>
+            <div data-chat-confirm class="mx-auto mt-3 inline-flex items-center gap-2 rounded-full bg-success px-4 py-2 text-sm font-medium text-white">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+              Horário confirmado na agenda
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 bg-wa-panel px-4 py-3" aria-hidden="true">
+            <svg class="h-6 w-6 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            <span class="flex-1 rounded-full bg-bg px-4 py-2 text-sm text-muted">Digite uma mensagem</span>
+            <svg class="h-6 w-6 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+          </div>
+        </div>
+
+        {/* ---------- card 2: lembrete ---------- */}
+        <div
+          data-chat-card="lembrete" data-chat-title="Lembrete automático"
+          class="chat-card is-right overflow-hidden rounded-3xl border border-line bg-bg shadow-[0_24px_60px_-30px_rgba(17,24,39,0.35)]"
+          role="figure"
+          aria-label="Conversa simulada: a Maya envia lembrete com botões de confirmação"
+        >
+          <div class="flex items-center gap-3 bg-wa-panel px-4 py-3">
+            <img src="/maya.svg" alt="" width="44" height="44" class="h-11 w-11 rounded-full" aria-hidden="true" />
+            <div class="flex-1">
+              <p class="leading-tight font-medium">Maya</p>
+              <p data-chat-status class="text-xs text-muted">online</p>
+            </div>
+            <svg class="h-5 w-5 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg>
+            <svg class="h-5 w-5 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <svg class="h-5 w-5 text-muted" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+          </div>
+
+          <div data-chat-panel="lembrete" class="chat-area flex min-h-[380px] flex-col justify-start gap-2 px-4 py-5 sm:px-6">
+            <div data-chat-bubble data-from="maya" class="chat-bubble chat-bubble-maya w-full max-w-[92%]">
+              <span class="chat-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <div class="chat-text">
+                <strong>Olá, Davi!</strong><br />
+                Passando para lembrar o seu agendamento de hoje, 07/07, às
+                <strong>19h40</strong> com o Will. Podemos confirmar?
+                <span class="mt-1 block text-xs" style="color: var(--wa-time);">Por favor, não responda esta mensagem — toque em um botão abaixo.</span>
+                <span class="chat-meta">06:52</span>
+                <span class="chat-btns" aria-hidden="true">
+                  <span class="chat-btn"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 6 6v2"/></svg>Sim, estou confirmado!</span>
+                  <span class="chat-btn"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 6 6v2"/></svg>Preciso cancelar</span>
+                  <span class="chat-btn"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 6 6v2"/></svg>Conseguimos reagendar?</span>
+                </span>
+              </div>
+            </div>
+            <div data-chat-bubble class="chat-bubble chat-bubble-client">
+              Sim, estou confirmado!
+              <span class="chat-meta">07:15 <Fragment set:html={ticksSvg} /></span>
+            </div>
+            <div data-chat-bubble data-from="maya" class="chat-bubble chat-bubble-maya">
+              <span class="chat-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <div class="chat-text">
+                Perfeito! Te esperamos às <strong>19h40</strong>. Até já!
+                <span class="chat-meta">07:15</span>
+              </div>
+            </div>
+            <div data-chat-confirm class="mx-auto mt-3 inline-flex items-center gap-2 rounded-full bg-success px-4 py-2 text-sm font-medium text-white">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+              Presença confirmada — menos uma falta
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 bg-wa-panel px-4 py-3" aria-hidden="true">
+            <svg class="h-6 w-6 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            <span class="flex-1 rounded-full bg-bg px-4 py-2 text-sm text-muted">Digite uma mensagem</span>
+            <svg class="h-6 w-6 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+          </div>
+        </div>
+
+        {/* ---------- card 3: follow-up ---------- */}
+        <div
+          data-chat-card="followup" data-chat-title="Follow-up que recupera"
+          class="chat-card is-left overflow-hidden rounded-3xl border border-line bg-bg shadow-[0_24px_60px_-30px_rgba(17,24,39,0.35)]"
+          role="figure"
+          aria-label="Conversa simulada: a Maya recupera um cliente sumido"
+        >
+          <div class="flex items-center gap-3 bg-wa-panel px-4 py-3">
+            <img src="/maya.svg" alt="" width="44" height="44" class="h-11 w-11 rounded-full" aria-hidden="true" />
+            <div class="flex-1">
+              <p class="leading-tight font-medium">Maya</p>
+              <p data-chat-status class="text-xs text-muted">online</p>
+            </div>
+            <svg class="h-5 w-5 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg>
+            <svg class="h-5 w-5 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <svg class="h-5 w-5 text-muted" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+          </div>
+
+          <div data-chat-panel="followup" class="chat-area flex min-h-[380px] flex-col justify-start gap-2 px-4 py-5 sm:px-6">
+            <div data-chat-bubble data-from="maya" class="chat-bubble chat-bubble-maya">
+              <span class="chat-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <div class="chat-text">
+                Oi, Marcos! Tudo bem? Já faz <strong>2 meses</strong> desde o seu último
+                corte com a Joyce. Que tal garantir um horário essa semana?
+                <span class="chat-meta">10:02</span>
+              </div>
+            </div>
+            <div data-chat-bubble data-from="maya" class="chat-bubble chat-bubble-maya">
+              <span class="chat-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <div class="chat-text">
+                Ela tem <strong>quinta às 18h</strong> ou <strong>sexta às 10h30</strong>.
+                <span class="chat-meta">10:02</span>
+              </div>
+            </div>
+            <div data-chat-bubble class="chat-bubble chat-bubble-client">
+              Boa! Pode ser quinta às 18h
+              <span class="chat-meta">10:40 <Fragment set:html={ticksSvg} /></span>
+            </div>
+            <div data-chat-bubble data-from="maya" class="chat-bubble chat-bubble-maya">
+              <span class="chat-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <div class="chat-text">
+                Agendado! Corte com a Joyce, <strong>quinta às 18h</strong>. Bom te ver de
+                volta!
+                <span class="chat-meta">10:41</span>
+              </div>
+            </div>
+            <div data-chat-confirm class="mx-auto mt-3 inline-flex items-center gap-2 rounded-full bg-success px-4 py-2 text-sm font-medium text-white">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+              Cliente recuperado
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 bg-wa-panel px-4 py-3" aria-hidden="true">
+            <svg class="h-6 w-6 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            <span class="flex-1 rounded-full bg-bg px-4 py-2 text-sm text-muted">Digite uma mensagem</span>
+            <svg class="h-6 w-6 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+          </div>
+        </div>
+      </div>
+
+      {/* setas do deck (só na experiência animada) */}
+      <button
+        type="button"
+        data-chat-prev
+        aria-label="Conversa anterior"
+        class="chat-arrow btn-shine absolute top-1/2 -left-4 z-40 hidden h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-line bg-bg text-ink shadow-[0_10px_24px_-10px_rgba(17,24,39,0.4)] transition-colors duration-300 hover:border-brand hover:text-brand md:-left-6"
+      >
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <button
+        type="button"
+        data-chat-next
+        aria-label="Próxima conversa"
+        class="chat-arrow btn-shine absolute top-1/2 -right-4 z-40 hidden h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-line bg-bg text-ink shadow-[0_10px_24px_-10px_rgba(17,24,39,0.4)] transition-colors duration-300 hover:border-brand hover:text-brand md:-right-6"
+      >
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>
+  </div>
+</section>

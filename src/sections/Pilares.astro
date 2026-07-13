@@ -1,0 +1,93 @@
+---
+const pilares = [
+  {
+    numero: '01',
+    tag: 'atendimento',
+    titulo: 'Atendimento centralizado',
+    texto:
+      'Todas as conversas do WhatsApp num inbox só, com histórico completo. Nada se perde, nenhum cliente fica sem resposta.',
+    icone:
+      'M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 20l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z',
+  },
+  {
+    numero: '02',
+    tag: 'agenda',
+    titulo: 'Agenda organizada',
+    texto:
+      'Horários, serviços e equipe num painel simples — com lembretes automáticos que confirmam presença e reduzem falta.',
+    icone:
+      'M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z',
+  },
+  {
+    numero: '03',
+    tag: 'controle',
+    titulo: 'IA com controle humano',
+    texto:
+      'A Maya trabalha; você comanda. Ligue e desligue a IA por conversa, acompanhe cada mensagem e assuma quando quiser.',
+    icone:
+      'M12 2a7 7 0 0 1 7 7v3.5a7 7 0 0 1-14 0V9a7 7 0 0 1 7-7zM9 10h.01M15 10h.01M12 22v-3',
+  },
+];
+---
+
+<section class="border-y border-line bg-bg-warm py-24 md:py-32">
+  <div class="mx-auto max-w-6xl px-5 md:px-8">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <div>
+        <p class="mb-4 font-mono text-sm tracking-widest text-brand uppercase" data-reveal>
+          Por que Marca AI
+        </p>
+        <h2 class="max-w-xl text-3xl md:text-5xl" data-reveal>
+          Três promessas. <span class="text-brand">Um sistema só.</span>
+        </h2>
+      </div>
+      <p class="max-w-sm text-muted" data-reveal>
+        Não é mais um inbox de WhatsApp: é o sistema operacional do seu atendimento.
+      </p>
+    </div>
+
+    <div class="mt-16 border-t border-line">
+      {
+        pilares.map((p, i) => (
+          <article
+            class="group relative grid items-start gap-x-8 gap-y-4 border-b border-line py-10 transition-colors duration-500 [grid-template-columns:auto_1fr] hover:bg-bg md:grid-cols-[110px_64px_1fr_auto] md:items-center md:gap-x-12 md:py-12"
+            data-reveal
+            data-reveal-delay={i * 0.08}
+          >
+            <span
+              class="font-display text-5xl font-bold text-line transition-colors duration-500 group-hover:text-brand md:text-7xl"
+              aria-hidden="true"
+            >
+              {p.numero}
+            </span>
+            <span class="mt-2 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-soft text-brand transition-colors duration-500 group-hover:bg-brand group-hover:text-white md:mt-0">
+              <svg
+                class="h-7 w-7"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d={p.icone} />
+              </svg>
+            </span>
+            <div class="col-span-2 md:col-span-1">
+              <h3 class="text-2xl md:text-3xl">{p.titulo}</h3>
+              <p class="mt-3 max-w-xl text-muted">{p.texto}</p>
+            </div>
+            <span class="hidden rounded-full border border-line px-4 py-1.5 font-mono text-xs tracking-widest text-muted uppercase transition-colors duration-500 group-hover:border-brand group-hover:text-brand md:inline-flex">
+              {p.tag}
+            </span>
+            <span
+              class="absolute inset-y-0 left-0 w-1 origin-top scale-y-0 bg-brand transition-transform duration-500 [transition-timing-function:var(--ease-out-expo)] group-hover:scale-y-100"
+              aria-hidden="true"
+            />
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,434 @@
+﻿---
+// A esfera da Maya com "spotlight mask" por rolagem: o palco fica pinado e,
+// conforme o scroll avança, uma máscara circular nasce na esfera e se expande
+// revelando a página laranja. Rolando de volta pra cima, a máscara se desfaz
+// (scrub reversível). Depois do pin, os cards seguem no fluxo normal.
+// Sem JS / com reduced-motion: tudo renderiza estático e empilhado.
+type FlowNode = { titulo: string; sub: string; icone: string; fim?: boolean };
+type Flow = { rotulo: string; nodes: FlowNode[] };
+
+// ícones multi-traço (estilo Lucide/Phosphor), renderizados via set:html
+const icones = {
+  chat: '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/><path d="M8 12h.01"/><path d="M12 12h.01"/><path d="M16 12h.01"/>',
+  varinha:
+    '<path d="m15 4 5 5L8.5 20.5a2.12 2.12 0 0 1-3-3L17 6"/><path d="M6 3v2"/><path d="M5 4h2"/><path d="M19 13v2"/><path d="M18 14h2"/><path d="M11 2v2"/><path d="M10 3h2"/>',
+  agenda:
+    '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M3 11h18"/><path d="m9.3 16 1.8 1.8 3.6-3.6"/>',
+  relogio: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+  sino: '<path d="M6 9a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 20.5a2 2 0 0 0 3.4 0"/><path d="M2.5 7A8 8 0 0 1 5 3.5"/><path d="M21.5 7A8 8 0 0 0 19 3.5"/>',
+  responde:
+    '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/><path d="m8.5 12.2 2.3 2.3 4.7-4.7"/>',
+  megafone:
+    '<path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>',
+  toggle: '<rect x="2" y="6" width="20" height="12" rx="6"/><circle cx="16" cy="12" r="3"/>',
+  usuario: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  usuarioVolta:
+    '<circle cx="10" cy="8" r="4"/><path d="M4 21a7.5 7.5 0 0 1 11-6.6"/><path d="m15.5 17.5 2 2 4-4"/>',
+  pausa: '<circle cx="12" cy="12" r="9"/><path d="M10 9v6"/><path d="M14 9v6"/>',
+};
+
+const fluxos: Flow[] = [
+  {
+    rotulo: 'quando um cliente chama',
+    nodes: [
+      { titulo: 'Cliente chama', sub: 'no seu WhatsApp de sempre', icone: icones.chat },
+      { titulo: 'Maya entende', sub: 'sabe o que ele quer', icone: icones.varinha },
+      { titulo: 'Olha sua agenda', sub: 'só oferece horário que existe', icone: icones.agenda },
+      { titulo: 'Horário marcado', sub: 'sem você pegar no celular', icone: '', fim: true },
+    ],
+  },
+  {
+    rotulo: 'antes do horário',
+    nodes: [
+      { titulo: 'Horário chegando', sub: 'ela fica de olho na agenda', icone: icones.relogio },
+      { titulo: 'Avisa o cliente', sub: '“posso confirmar seu horário?”', icone: icones.sino },
+      { titulo: 'Cliente responde', sub: 'confirma ou remarca na hora', icone: icones.responde },
+      { titulo: 'Cadeira cheia', sub: 'a falta despenca', icone: '', fim: true },
+    ],
+  },
+  {
+    rotulo: 'quando o cliente some',
+    nodes: [
+      { titulo: 'Cliente sumiu', sub: 'semanas sem aparecer', icone: icones.usuario },
+      { titulo: 'Maya chama de volta', sub: 'mensagem na hora certa', icone: icones.megafone },
+      { titulo: 'Cliente de volta', sub: 'dinheiro que ia embora, recuperado', icone: '', fim: true },
+    ],
+  },
+  {
+    rotulo: 'quando você quer assumir',
+    nodes: [
+      { titulo: 'Quer entrar na conversa?', sub: 'a qualquer momento', icone: icones.toggle },
+      { titulo: 'Maya dá lugar', sub: 'pausa só naquele cliente', icone: icones.pausa },
+      { titulo: 'Você no comando', sub: 'e religa quando quiser', icone: '', fim: true },
+    ],
+  },
+];
+---
+
+<section id="system-tree" class="relative overflow-hidden border-y border-line bg-bg">
+  {/* ------- palco pinado: esfera + máscara circular ------- */}
+  <div data-maya-pin class="relative">
+    <div class="relative mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center px-5 py-20 md:px-8">
+      <div
+        class="pointer-events-none absolute inset-0"
+        style="background:
+          radial-gradient(46% 60% at 50% 55%, color-mix(in srgb, var(--brand) 9%, transparent), transparent 70%);"
+        aria-hidden="true"
+      >
+      </div>
+
+      <div class="relative flex -translate-y-[9vh] flex-col items-center">
+        <p class="font-mono text-base tracking-[0.3em] text-brand uppercase md:text-xl" data-reveal>
+          Como a Maya trabalha
+        </p>
+
+        <div data-maya-hint class="mt-9 flex-col items-center gap-2.5 text-ink" aria-hidden="true">
+          <span class="font-mono text-sm font-bold tracking-[0.3em] uppercase md:text-base">
+            role para entrar
+          </span>
+          <svg
+            class="maya-hint-arrow h-6 w-6 text-brand md:h-7 md:w-7"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M12 5v14M5 12l7 7 7-7" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    {/* véu laranja revelado pela máscara circular (overlay só com motion) */}
+    <div data-maya-cover class="maya-cover">
+      {/* seta convidando a continuar até o mapa */}
+      <div class="cover-arrow h-full flex-col items-center justify-center gap-0 text-white" aria-hidden="true">
+        <svg class="cover-chev h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m5 9 7 7 7-7" />
+        </svg>
+        <svg class="cover-chev cover-chev-2 -mt-5 h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m5 9 7 7 7-7" />
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  {/* ------- corpo laranja: os problemas reais que a Maya resolve ------- */}
+  <div class="maya-body relative">
+    <div class="relative mx-auto max-w-6xl px-5 pt-14 pb-20 md:px-8 md:pt-16 md:pb-24">
+      <div class="text-center" data-reveal>
+        <h3 class="mx-auto max-w-2xl font-display text-3xl font-bold text-white md:text-5xl">
+          O que a Maya resolve por você
+        </h3>
+        <p class="mx-auto mt-4 max-w-xl text-lg text-white/85">
+          Problemas de todo dia, resolvidos sem você pegar no celular.
+        </p>
+      </div>
+
+      <div class="mt-12 space-y-14 md:mt-16 md:space-y-16">
+        {
+          fluxos.map((f) => (
+            <div data-flow>
+              <p
+                data-flow-label
+                class="mb-6 flex items-center justify-center gap-2 font-mono text-xs font-bold tracking-[0.25em] text-white/85 uppercase"
+              >
+                <span class="h-1.5 w-1.5 rounded-full bg-white" aria-hidden="true" />
+                {f.rotulo}
+              </p>
+              <div class="relative flex flex-col items-center md:flex-row md:flex-wrap md:justify-center md:gap-y-4">
+                {/* halo discreto que pulsa quando o fluxo termina de se formar */}
+                <div class="flow-halo" aria-hidden="true"></div>
+                {f.nodes.map((n, j) => (
+                  <>
+                    {j > 0 && (
+                      <svg
+                        data-flow-conn
+                        class="h-10 w-12 shrink-0 rotate-90 md:h-12 md:w-14 md:rotate-0"
+                        viewBox="0 0 64 48"
+                        aria-hidden="true"
+                      >
+                        <path class="flow-link" pathLength="1" d="M5,24 C24,8 40,40 59,24" />
+                        <circle class="flow-dot" cx="5" cy="24" r="3" />
+                        <circle class="flow-dot" cx="59" cy="24" r="3" />
+                        <circle class="flow-pulse" cx="5" cy="24" r="4.5" />
+                      </svg>
+                    )}
+                    <div
+                      data-flow-node
+                      class="relative w-full max-w-[300px] rounded-xl md:w-auto md:max-w-[225px]"
+                    >
+                      {/* traçado que desenha o contorno da caixa */}
+                      <svg
+                        class="node-trace pointer-events-none absolute inset-0 h-full w-full overflow-visible"
+                        aria-hidden="true"
+                      >
+                        <rect class="node-trace-rect" pathLength="1" rx="11"></rect>
+                        <circle class="node-spark" r="4"></circle>
+                      </svg>
+                      {/* preenchimento que surge depois do traçado */}
+                      <span
+                        class="node-fill absolute inset-0 rounded-xl bg-[linear-gradient(155deg,#ffffff_55%,var(--brand-soft))] shadow-[0_24px_50px_-22px_rgba(120,40,0,0.75),0_0_0_1.5px_rgba(255,255,255,0.45)]"
+                        aria-hidden="true"></span>
+                      {/* filete de marca na lateral */}
+                      <span
+                        class:list={[
+                          'node-accent absolute top-3 bottom-3 left-0 w-1 rounded-r-full',
+                          n.fim
+                            ? 'bg-gradient-to-b from-success to-[#0d7a37]'
+                            : 'bg-gradient-to-b from-brand to-brand-strong',
+                        ]}
+                        aria-hidden="true"></span>
+                      {j > 0 && (
+                        <span
+                          class="node-port absolute top-1/2 -left-1 hidden h-2 w-2 -translate-y-1/2 rounded-full border-2 border-bg bg-brand md:block"
+                          aria-hidden="true"
+                        />
+                      )}
+                      {j < f.nodes.length - 1 && (
+                        <span
+                          class="node-port absolute top-1/2 -right-1 hidden h-2 w-2 -translate-y-1/2 rounded-full border-2 border-bg bg-brand md:block"
+                          aria-hidden="true"
+                        />
+                      )}
+                      <div class="node-body relative flex items-center gap-3 px-3.5 py-3.5">
+                        <span
+                          class:list={[
+                            'node-chip inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white',
+                            n.fim
+                              ? 'bg-gradient-to-br from-success to-[#0d7a37] shadow-[0_8px_18px_-6px_rgba(22,163,74,0.75)]'
+                              : 'bg-gradient-to-br from-brand to-brand-strong shadow-[0_8px_18px_-6px_rgba(255,106,33,0.75)]',
+                          ]}
+                        >
+                          <svg
+                            class="h-5 w-5"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                          >
+                            {n.fim ? (
+                              <path class="flow-check" pathLength="1" d="M20 6 9 17l-5-5" />
+                            ) : (
+                              <Fragment set:html={n.icone} />
+                            )}
+                          </svg>
+                        </span>
+                        <span>
+                          <span class="block text-[15px] leading-tight font-bold">{n.titulo}</span>
+                          <span class="mt-0.5 block text-xs leading-snug text-muted">{n.sub}</span>
+                        </span>
+                      </div>
+                    </div>
+                  </>
+                ))}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <p data-reveal class="mx-auto mt-16 max-w-xl text-center text-lg text-white/90">
+        É isso que acontece dentro da esfera — e, do lado de fora,
+        <strong class="font-semibold text-white">sua agenda só enche</strong>.
+      </p>
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  .maya-hint-arrow {
+    animation: maya-hint 1.6s var(--ease-in-out-quart) infinite;
+  }
+  @keyframes maya-hint {
+    0%,
+    100% {
+      transform: translateY(0);
+      opacity: 0.5;
+    }
+    50% {
+      transform: translateY(6px);
+      opacity: 1;
+    }
+  }
+
+  /* ------- véu e corpo laranja (gradientes emendados na costura) ------- */
+  #system-tree .maya-cover {
+    position: relative;
+    background: linear-gradient(180deg, var(--brand) 0%, var(--brand-strong) 100%);
+  }
+  /* seta em cascata no véu — só existe na experiência animada */
+  #system-tree .cover-arrow {
+    display: none;
+  }
+  .motion-ok #system-tree .cover-arrow {
+    display: flex;
+  }
+  #system-tree .cover-chev {
+    filter: drop-shadow(0 4px 12px rgba(120, 40, 0, 0.4));
+    animation: cover-chev-fall 1.5s var(--ease-in-out-quart) infinite;
+  }
+  #system-tree .cover-chev-2 {
+    animation-delay: 0.18s;
+  }
+  @keyframes cover-chev-fall {
+    0% {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    45% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+  }
+  #system-tree .maya-body {
+    background: linear-gradient(180deg, var(--brand-strong) 0%, #b23c05 100%);
+  }
+
+  /* ------- estados: com motion o véu vira overlay mascarado ------- */
+  #system-tree [data-maya-hint] {
+    display: none;
+  }
+  .motion-ok #system-tree [data-maya-hint] {
+    display: flex;
+  }
+  .motion-ok #system-tree .maya-cover {
+    position: absolute;
+    inset: 0;
+    min-height: 0;
+    clip-path: circle(0px at 50% 62%);
+  }
+  /* ------- fluxos estilo n8n ------- */
+  #system-tree .flow-link {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.9);
+    stroke-width: 2;
+  }
+  #system-tree .flow-dot {
+    fill: #fff;
+  }
+  /* pulso que viaja pela linha durante a formação */
+  #system-tree .flow-pulse {
+    fill: #fff;
+    opacity: 0;
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.9));
+  }
+  /* traçado que desenha o contorno da caixa antes do preenchimento */
+  #system-tree .node-trace {
+    opacity: 0;
+  }
+  #system-tree .node-trace-rect {
+    x: 1px;
+    y: 1px;
+    width: calc(100% - 2px);
+    height: calc(100% - 2px);
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
+  }
+  /* faísca que percorre o contorno enquanto ele se desenha */
+  #system-tree .node-spark {
+    fill: #fff;
+    opacity: 0;
+    filter: drop-shadow(0 0 7px rgba(255, 255, 255, 0.95));
+  }
+  /* caixas depois de prontas: brilho de vitrine + resposta ao hover */
+  #system-tree .node-fill {
+    transition:
+      transform 0.35s var(--ease-out-expo),
+      box-shadow 0.35s ease;
+  }
+  #system-tree .flow-live [data-flow-node] .node-fill {
+    box-shadow:
+      0 26px 54px -22px rgba(120, 40, 0, 0.8),
+      0 0 0 1.5px rgba(255, 255, 255, 0.6),
+      0 0 36px -6px rgba(255, 235, 215, 0.55);
+  }
+  #system-tree [data-flow-node]:hover .node-fill {
+    box-shadow:
+      0 26px 54px -20px rgba(120, 40, 0, 0.9),
+      0 0 0 2px rgba(255, 255, 255, 0.85),
+      0 0 44px -4px rgba(255, 235, 215, 0.75);
+  }
+
+  /* halo central discreto: pulso de "pronto" + respiração suave contínua */
+  #system-tree .flow-halo {
+    position: absolute;
+    inset: -28px -8%;
+    background: radial-gradient(
+      50% 62% at 50% 50%,
+      rgba(255, 255, 255, 0.18),
+      transparent 72%
+    );
+    opacity: 0;
+    pointer-events: none;
+  }
+  #system-tree .flow-live .flow-halo {
+    animation: halo-breathe 4.5s ease-in-out 0.6s infinite;
+  }
+  @keyframes halo-breathe {
+    0%,
+    100% {
+      opacity: 0.22;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.4;
+      transform: scale(1.03);
+    }
+  }
+  @keyframes flow-march {
+    to {
+      stroke-dashoffset: -0.32;
+    }
+  }
+  .motion-ok #system-tree [data-flow-label] {
+    opacity: 0;
+  }
+  /* com motion: a caixa espera o traçado — contorno visível, corpo oculto */
+  .motion-ok #system-tree .node-trace {
+    opacity: 1;
+  }
+  .motion-ok #system-tree .node-trace-rect {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  .motion-ok #system-tree .node-fill,
+  .motion-ok #system-tree .node-port,
+  .motion-ok #system-tree .node-accent,
+  .motion-ok #system-tree .node-body {
+    opacity: 0;
+  }
+  .motion-ok #system-tree [data-flow-conn] {
+    opacity: 0;
+  }
+  .motion-ok #system-tree [data-flow-conn] .flow-link {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  .motion-ok #system-tree .flow-check {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  /* depois de formado, a linha fica "viva" (tracejado corrente, estilo n8n);
+     precisa vir depois da regra do draw-in para vencer na cascata */
+  .motion-ok #system-tree .flow-live .flow-link {
+    stroke-dasharray: 0.07 0.09;
+    animation: flow-march 1.8s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #system-tree .maya-hint-arrow {
+      animation: none;
+    }
+  }
+</style>

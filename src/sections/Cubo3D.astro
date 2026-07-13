@@ -1,0 +1,253 @@
+﻿---
+// Cena imersiva: sala laranja com painéis de vidro. O texto 3D em marquee é
+// mapeado nas três paredes de vidro da foto (esquerda, fundo, direita) e o
+// barbeiro (PNG transparente) fica à frente de tudo, embaixo e centralizado.
+// O CTA final mora aqui: sobreposto ao teto da cena no desktop, bloco
+// próprio abaixo da cena no mobile.
+import Button from '../components/Button.astro';
+
+const frase =
+  'ATENDIMENTO QUE NUNCA DORME · A MAYA RESPONDE NA HORA · AGENDA CHEIA · VOCÊ NO CONTROLE · ';
+---
+
+<section class="room-section relative" aria-label="Chamada final da Marca AI">
+  <div class="room-frame" data-room-frame>
+    <div class="room-stage" data-room-stage>
+      <img
+        class="room-bg"
+        src="/sala-laranja.webp"
+        alt=""
+        width="1920"
+        height="1071"
+        loading="lazy"
+        aria-hidden="true"
+      />
+
+      {/* Fita única de texto em 3D real: as três paredes são janelas para a
+          mesma fita (offsets encadeados), então o texto dobra nos cantos e
+          percorre a sala inteira em ordem. */}
+      <div class="room3d" aria-hidden="true">
+        <div class="room3d-cube">
+          <div class="room3d-face room3d-left"><p>{frase}{frase}{frase}{frase}{frase}{frase}</p></div>
+          <div class="room3d-face room3d-back"><p>{frase}{frase}{frase}{frase}{frase}{frase}</p></div>
+          <div class="room3d-face room3d-right"><p>{frase}{frase}{frase}{frase}{frase}{frase}</p></div>
+        </div>
+      </div>
+
+      {/* reflexo do texto no piso */}
+      <div class="room3d room3d-reflect" aria-hidden="true">
+        <div class="room3d-cube">
+          <div class="room3d-face room3d-left"><p>{frase}{frase}{frase}{frase}{frase}{frase}</p></div>
+          <div class="room3d-face room3d-back"><p>{frase}{frase}{frase}{frase}{frase}{frase}</p></div>
+          <div class="room3d-face room3d-right"><p>{frase}{frase}{frase}{frase}{frase}{frase}</p></div>
+        </div>
+      </div>
+
+      {/* barbeiro à frente de tudo */}
+      <img
+        class="room-man"
+        src="/barbeiro.webp"
+        alt="Barbeiro de costas segurando tesoura e pente"
+        width="900"
+        height="1188"
+        loading="lazy"
+      />
+    </div>
+
+    <p class="sr-only">
+      Atendimento que nunca dorme: a Maya responde na hora, mantém a agenda cheia e você
+      no controle.
+    </p>
+  </div>
+
+  {/* ------- CTA final: centralizado na cena, com meia-sombra de ênfase ------- */}
+  <div
+    class="relative border-t border-line bg-gradient-to-b from-bg-warm to-brand-soft px-5 py-16 text-center lg:absolute lg:inset-0 lg:z-10 lg:flex lg:items-center lg:justify-center lg:border-0 lg:bg-none lg:p-0"
+  >
+    <div
+      class="lg:rounded-[5rem] lg:bg-[radial-gradient(58%_62%_at_50%_50%,rgba(22,10,3,0.5),rgba(22,10,3,0.2)_58%,transparent_78%)] lg:px-28 lg:py-20"
+    >
+      <h2
+        class="mx-auto max-w-4xl text-4xl leading-[1.08] text-ink md:text-5xl lg:text-white lg:[text-shadow:0_2px_28px_rgba(20,8,0,0.65)] xl:text-6xl"
+        data-reveal
+      >
+        Pronto para nunca mais deixar cliente <span class="text-brand">no vácuo</span>?
+      </h2>
+      <div class="mt-10 flex justify-center" data-reveal>
+        <Button href="https://wa.me/" class="px-12 py-5 text-lg font-semibold md:text-xl"
+          >Quero no meu negócio</Button
+        >
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .room-section {
+    overflow: hidden;
+    border-block: 1px solid var(--line);
+    background: var(--bg-warm);
+    /* coluna: no mobile o CTA (relative) fica ABAIXO da cena — em row ele
+       virava filho do flex e espremia a cena num filete lateral */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .room-frame {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  /* palco em coordenadas fixas (1000×558), escalado para a largura da tela */
+  .room-stage {
+    position: relative;
+    width: 1000px;
+    height: 558px;
+    flex-shrink: 0;
+    transform-origin: center;
+  }
+
+  .room-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ------- sala 3D: uma fita de texto contínua nas três paredes -------
+     Geometria calibrada na foto: palco 1000×558; parede do fundo ocupa
+     x 27%–73% ⇒ escala do fundo = 0.46 ⇒ com perspective 800px, a
+     profundidade D = 800·(1−0.46)/0.46 ≈ 940px; meia-largura HW = 500px. */
+  .room3d {
+    position: absolute;
+    inset: 0;
+    perspective: 800px;
+    perspective-origin: 500px 335px;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+  .room3d-cube {
+    position: absolute;
+    left: 500px;
+    top: 335px;
+    width: 0;
+    height: 0;
+    transform-style: preserve-3d;
+  }
+  .room3d-face {
+    position: absolute;
+    top: -185px;
+    height: 240px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
+  .room3d-back {
+    left: -500px;
+    width: 1000px;
+    transform: translateZ(-940px);
+  }
+  .room3d-left {
+    left: -470px;
+    width: 940px;
+    transform: translateX(-500px) translateZ(-470px) rotateY(90deg);
+  }
+  .room3d-right {
+    left: -470px;
+    width: 940px;
+    transform: translateX(500px) translateZ(-470px) rotateY(-90deg);
+  }
+
+  .room3d-face p {
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    font-size: 140px;
+    line-height: 1;
+    color: #8a3608;
+    opacity: 0.42;
+    animation: room-strip 80s linear infinite;
+  }
+  /* offsets encadeados: fundo continua de onde a esquerda parou (940px),
+     direita continua do fundo (940 + 1000) — fita única dobrando nos cantos */
+  .room3d-back p {
+    margin-left: -940px;
+  }
+  .room3d-right p {
+    margin-left: -1940px;
+  }
+
+  /* reflexo no piso em 3D: mesmas faces, deslocadas para baixo do plano do
+     chão (base da faixa, y local +132) com o conteúdo invertido (scaleY(-1)
+     espelha em torno da aresta compartilhada). Fica correto em qualquer
+     profundidade da sala. */
+  .room3d-reflect {
+    opacity: 0.5;
+    filter: blur(1px);
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 348px,
+      rgba(0, 0, 0, 0.85) 396px,
+      rgba(0, 0, 0, 0.12) 520px,
+      transparent 558px
+    );
+  }
+  .room3d-reflect .room3d-face {
+    top: 55px;
+  }
+  .room3d-reflect .room3d-back {
+    transform: translateZ(-940px) scaleY(-1);
+  }
+  .room3d-reflect .room3d-left {
+    transform: translateX(-500px) translateZ(-470px) rotateY(90deg) scaleY(-1);
+  }
+  .room3d-reflect .room3d-right {
+    transform: translateX(500px) translateZ(-470px) rotateY(-90deg) scaleY(-1);
+  }
+
+  /* ------- barbeiro ------- */
+  .room-man {
+    position: absolute;
+    bottom: 0;
+    left:53%;
+    width: 32%;
+    height: auto;
+    transform: translateX(-50%);
+    filter: drop-shadow(0 22px 34px rgba(30, 10, 0, 0.45));
+  }
+
+  @keyframes room-strip {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .room3d-face p {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  // Escala o palco de 1000px para preencher a largura da tela,
+  // ajustando a altura do frame para não sobrar/faltar espaço.
+  const frame = document.querySelector<HTMLElement>('[data-room-frame]');
+  const stage = document.querySelector<HTMLElement>('[data-room-stage]');
+  function adjustRoom() {
+    if (!frame || !stage) return;
+    // em telas estreitas, garante altura mínima cortando as laterais da cena
+    const scale = Math.max(frame.clientWidth / 1000, 380 / 558);
+    stage.style.transform = `scale(${scale})`;
+    frame.style.height = `${558 * scale}px`;
+  }
+  adjustRoom();
+  window.addEventListener('resize', adjustRoom, { passive: true });
+</script>

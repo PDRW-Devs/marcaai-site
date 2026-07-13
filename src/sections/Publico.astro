@@ -1,0 +1,145 @@
+﻿---
+// faixa cinética: duas linhas de tipografia gigante em direções opostas
+const faixaCheia = [
+  'Não perca mais clientes',
+  'Pare de perder agendamento',
+  'Agenda sempre cheia',
+];
+const faixaContorno = [
+  'Feita pra sua barbearia',
+  'Cliente no vácuo nunca mais',
+  'Resposta na hora',
+  'A falta despenca',
+];
+
+// artes por nicho: ilustrações autorais em linha (SVG) sobre o gradiente da marca
+const publicos = [
+  {
+    nome: 'Barbearias',
+    tag: 'corte marcado, cadeira cheia',
+    arte: '<circle cx="28" cy="34" r="9"/><circle cx="28" cy="62" r="9"/><path d="M36 40 74 70"/><path d="M36 56 74 26"/><circle cx="48" cy="48" r="3" fill="currentColor" stroke="none"/><path d="m78 42 2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/>',
+  },
+  {
+    nome: 'Salões & studios de beleza',
+    tag: 'agenda de beleza sem buraco',
+    arte: '<rect x="16" y="26" width="36" height="22" rx="11"/><path d="M52 32h18l8 5-8 5H52"/><path d="M30 48l-5 24 13 3 5-23"/><path d="M82 52h8M80 60h6"/><circle cx="30" cy="37" r="4"/>',
+  },
+  {
+    nome: 'Clínicas de estética',
+    tag: 'sessões sempre confirmadas',
+    arte: '<path d="M48 66c-8-6-11-17-6-26 4 6 5 11 6 13 1-2 2-7 6-13 5 9 2 20-6 26z"/><path d="M48 66c-11 3-20-1-26-9 8-3 15-1 19 1"/><path d="M48 66c11 3 20-1 26-9-8-3-15-1-19 1"/><path d="m70 26 2 4 4 2-4 2-2 4-2-4-4-2 4-2z"/>',
+  },
+  {
+    nome: 'Clínicas odontológicas',
+    tag: 'consultas sem furo',
+    arte: '<path d="M33 28c8-6 22-6 30 0 6 5 6 14 2 22-3 6-4 24-9 24s-3-13-8-13-3 13-8 13-6-18-9-24c-4-8-4-17 2-22z"/><path d="m74 24 2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/>',
+  },
+  {
+    nome: 'Alta demanda de agendamento',
+    tag: 'volume alto, zero caos',
+    arte: '<rect x="18" y="26" width="60" height="50" rx="7"/><path d="M32 18v12M64 18v12M18 42h60"/><path d="M52 48 41 62h9l-5 16 13-18h-9z"/>',
+  },
+];
+---
+
+<section class="overflow-hidden border-y border-line bg-bg-warm py-24 md:py-32">
+  {/* faixa cinética inclinada — tipografia gigante em movimento */}
+  <div class="kinetic-band mb-20 md:mb-24" aria-hidden="true">
+    <div class="marquee-track flex w-max items-center gap-[0.6em] font-display leading-none font-bold tracking-tight text-white uppercase [font-size:clamp(2.6rem,6vw,5.5rem)]">
+      {
+        [0, 1].map(() => (
+          <span class="flex items-center gap-[0.6em] whitespace-nowrap">
+            {faixaCheia.map((f) => (
+              <span class="flex items-center gap-[0.6em]">
+                {f} <span class="kinetic-dot" />
+              </span>
+            ))}
+          </span>
+        ))
+      }
+    </div>
+    <div class="marquee-track kinetic-reverse kinetic-outline mt-1 flex w-max items-center gap-[0.6em] font-display leading-none font-bold tracking-tight uppercase [font-size:clamp(2rem,4.5vw,4rem)]">
+      {
+        [0, 1].map(() => (
+          <span class="flex items-center gap-[0.6em] whitespace-nowrap">
+            {faixaContorno.map((f) => (
+              <span class="flex items-center gap-[0.6em]">
+                {f} <span class="kinetic-dot" />
+              </span>
+            ))}
+          </span>
+        ))
+      }
+    </div>
+  </div>
+  <p class="sr-only">
+    Não perca mais clientes. Pare de perder agendamento. Agenda sempre cheia. Feita pra
+    sua barbearia: cliente no vácuo nunca mais, resposta na hora, a falta despenca.
+  </p>
+
+  <div class="mx-auto max-w-6xl px-5 md:px-8">
+    <p class="mb-4 font-mono text-sm tracking-widest text-brand uppercase" data-reveal>
+      Para quem é
+    </p>
+    <h2 class="max-w-2xl text-3xl md:text-5xl" data-reveal>
+      Feita para quem vive de agenda cheia.
+    </h2>
+    <p class="mt-6 max-w-xl text-lg text-muted" data-reveal>
+      Se a sua operação vive de horário marcado, a Marca AI é a camada de atendimento
+      que não deixa agenda ociosa.
+    </p>
+
+    <ul class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-6">
+      {
+        publicos.map((p, i) => (
+          <li
+            data-reveal
+            data-reveal-delay={(i % 3) * 0.08}
+            class:list={[
+              'group relative overflow-hidden rounded-2xl shadow-[0_24px_48px_-24px_rgba(255,106,33,0.55)]',
+              i < 3
+                ? 'aspect-[16/10] sm:aspect-[4/3] lg:col-span-2'
+                : 'aspect-[16/10] sm:aspect-[4/3] lg:col-span-3 lg:aspect-[16/8]',
+              i === 4 && 'sm:col-span-2 sm:aspect-[16/7]',
+            ]}
+          >
+            {/* fundo da arte: gradiente da marca + realces */}
+            <span
+              class="absolute inset-0 bg-[linear-gradient(150deg,var(--brand)_0%,var(--brand-strong)_70%,#c2470a_100%)]"
+              aria-hidden="true"
+            />
+            <span
+              class="absolute inset-0 bg-[radial-gradient(60%_55%_at_30%_20%,rgba(255,255,255,0.22),transparent_70%)]"
+              aria-hidden="true"
+            />
+            <span
+              class="absolute -top-10 -right-10 h-36 w-36 rounded-full border-[10px] border-white/10"
+              aria-hidden="true"
+            />
+            {/* ilustração do nicho */}
+            <svg
+              class="absolute top-1/2 left-1/2 h-24 w-24 -translate-x-1/2 -translate-y-[62%] text-white drop-shadow-[0_6px_16px_rgba(120,40,0,0.4)] transition-transform duration-500 [transition-timing-function:var(--ease-out-expo)] group-hover:scale-110 md:h-28 md:w-28"
+              viewBox="0 0 96 96"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              set:html={p.arte}
+            />
+            {/* rótulo */}
+            <span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#7a2c05]/85 to-transparent px-5 pt-10 pb-4 text-left">
+              <span class="block font-display text-lg leading-tight font-semibold text-white">
+                {p.nome}
+              </span>
+              <span class="mt-0.5 block font-mono text-[11px] tracking-wider text-white/85 uppercase">
+                {p.tag}
+              </span>
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

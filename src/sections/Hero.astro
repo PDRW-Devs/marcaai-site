@@ -1,0 +1,46 @@
+---
+import Button from '../components/Button.astro';
+---
+
+{/* Hero pinado: o ScrollTrigger prende a seção por 200% de scroll enquanto o
+    canvas faz o scrub dos frames. Sem motion, fica o poster estático. */}
+<section id="hero" class="relative flex min-h-[calc(100dvh-6rem)] items-center bg-bg md:min-h-[calc(100dvh-7rem)]">
+  <div
+    class="mx-auto grid w-full max-w-6xl items-center gap-10 px-5 py-10 md:grid-cols-2 md:gap-16 md:px-8"
+  >
+    <div data-hero-overlay>
+      <p class="mb-4 font-mono text-sm tracking-widest text-brand uppercase">
+        Atendimento · Agenda · IA
+      </p>
+      <h1 class="text-4xl leading-[1.05] sm:text-5xl md:text-6xl xl:text-7xl">
+        Seu WhatsApp vira uma recepção que <span class="text-brand">nunca dorme</span>.
+      </h1>
+      <p class="mt-6 max-w-md text-lg text-muted">
+        A Marca AI centraliza seu atendimento, organiza sua agenda e coloca a Maya — sua
+        recepcionista com IA — para responder, agendar e lembrar seus clientes. Com você
+        no controle.
+      </p>
+      <div class="mt-10 flex flex-wrap gap-4">
+        <Button href="https://wa.me/">Falar no WhatsApp</Button>
+        <Button href="#maya" variant="secondary">Conhecer a Maya</Button>
+      </div>
+    </div>
+
+    <div class="relative mx-auto aspect-square w-full max-w-[min(80vw,560px)]">
+      <img
+        data-hero-poster
+        src="/frames/0001.webp"
+        alt="Demonstração animada da Marca AI"
+        width="960"
+        height="960"
+        fetchpriority="high"
+        class="absolute inset-0 h-full w-full object-cover transition-opacity duration-300"
+      />
+      <canvas
+        data-hero-canvas
+        aria-hidden="true"
+        class="absolute inset-0 h-full w-full opacity-0 transition-opacity duration-300"
+      ></canvas>
+    </div>
+  </div>
+</section>
