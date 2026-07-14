@@ -262,6 +262,19 @@ h3 {
 .motion-ok .chat-arrow {
   display: flex;
 }
+/* Mobile: não há largura para o leque 3D — os cards de trás somem e a troca
+   vira um crossfade com leve zoom, sem estourar a tela nem desfocar nada. */
+@media (max-width: 767px) {
+  .motion-ok .chat-deck {
+    perspective: none;
+  }
+  .motion-ok .chat-deck .chat-card.is-left,
+  .motion-ok .chat-deck .chat-card.is-right {
+    transform: scale(0.94);
+    filter: none;
+    opacity: 0;
+  }
+}
 /* rótulo flutuante do exemplo ativo — só na experiência animada */
 .chat-label {
   display: none;
@@ -295,6 +308,13 @@ h3 {
   font-size: 0.9rem;
   line-height: 1.45;
   box-shadow: 0 1px 0.5px rgba(11, 20, 26, 0.13);
+}
+/* Mobile: bolhas aproveitam melhor a largura, texto um tico menor */
+@media (max-width: 640px) {
+  .chat-bubble {
+    max-width: 90%;
+    font-size: 0.875rem;
+  }
 }
 .chat-bubble-client {
   align-self: flex-end;

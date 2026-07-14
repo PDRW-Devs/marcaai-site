@@ -2,13 +2,14 @@
 import Button from '../components/Button.astro';
 ---
 
-{/* Hero pinado: o ScrollTrigger prende a seção por 200% de scroll enquanto o
-    canvas faz o scrub dos frames. Sem motion, fica o poster estático. */}
-<section id="hero" class="relative flex min-h-[calc(100dvh-6rem)] items-center bg-bg md:min-h-[calc(100dvh-7rem)]">
+{/* Hero pinado: o ScrollTrigger prende a seção enquanto o canvas faz o scrub
+    dos frames. No mobile a animação vira full-bleed (tela inteira) atrás do
+    texto; no desktop é a coluna da direita. Sem motion, poster estático. */}
+<section id="hero" class="relative flex min-h-[calc(100svh-4rem)] items-start overflow-hidden bg-bg md:min-h-[calc(100dvh-7rem)] md:items-center">
   <div
-    class="mx-auto grid w-full max-w-6xl items-center gap-10 px-5 py-10 md:grid-cols-2 md:gap-16 md:px-8"
+    class="mx-auto grid w-full max-w-6xl items-center gap-10 px-5 py-8 md:grid-cols-2 md:gap-16 md:px-8 md:py-10"
   >
-    <div data-hero-overlay>
+    <div data-hero-overlay class="relative z-10">
       <p class="mb-4 font-mono text-sm tracking-widest text-brand uppercase">
         Atendimento · Agenda · IA
       </p>
@@ -26,7 +27,8 @@ import Button from '../components/Button.astro';
       </div>
     </div>
 
-    <div class="relative mx-auto aspect-square w-full max-w-[min(80vw,560px)]">
+    {/* mobile: cobre a seção inteira atrás do texto; md+: coluna quadrada */}
+    <div class="pointer-events-none absolute inset-0 md:pointer-events-auto md:relative md:inset-auto md:mx-auto md:aspect-square md:w-full md:max-w-[min(80vw,560px)]">
       <img
         data-hero-poster
         src="/frames/0001.webp"
@@ -34,7 +36,7 @@ import Button from '../components/Button.astro';
         width="960"
         height="960"
         fetchpriority="high"
-        class="absolute inset-0 h-full w-full object-cover transition-opacity duration-300"
+        class="absolute inset-0 h-full w-full object-contain transition-opacity duration-300 md:object-cover"
       />
       <canvas
         data-hero-canvas

@@ -30,15 +30,14 @@ function getRefs(): HeroRefs | null {
 
 function setupCanvas(canvas: HTMLCanvasElement): CanvasRenderingContext2D {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const size = canvas.clientWidth;
-  canvas.width = size * dpr;
-  canvas.height = size * dpr;
+  canvas.width = canvas.clientWidth * dpr;
+  canvas.height = canvas.clientHeight * dpr;
   const ctx = canvas.getContext('2d')!;
   ctx.scale(dpr, dpr);
   return ctx;
 }
 
-function initScrub(refs: HeroRefs, step: number): void {
+function initScrub(refs: HeroRefs, step: number, end: string): void {
   const { section, canvas, poster } = refs;
   const total = Math.floor(TOTAL_FRAMES / step);
   const seq = loadFrames(FRAMES_DIR, total, step);
@@ -49,15 +48,20 @@ function initScrub(refs: HeroRefs, step: number): void {
   const draw = (index: number) => {
     const img = seq.nearest(index);
     if (!img) return;
-    const size = canvas.clientWidth;
-    ctx.drawImage(img, 0, 0, size, size);
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
+    // frame quadrado: no desktop o contêiner também é (s == w == h); no
+    // mobile full-bleed, cobre a largura com folga sem estourar a altura
+    const s = Math.min(h, w * 1.3);
+    ctx.clearRect(0, 0, w, h);
+    ctx.drawImage(img, (w - s) / 2, (h - s) / 2, s, s);
   };
 
   gsap.timeline({
     scrollTrigger: {
       trigger: section,
       start: 'top top',
-      end: '+=200%',
+      end,
       pin: true,
       scrub: 0.5,
       onUpdate: (self) => {
@@ -120,8 +124,9 @@ export function initHeroScrollVideo(): void {
   if (!document.documentElement.classList.contains('motion-ok')) return;
 
   const mm = gsap.matchMedia();
-  // Desktop/tablet: sequência completa; mobile: metade dos frames —
-  // mesma duração visual, metade do payload.
-  mm.add('(min-width: 768px)', () => initScrub(refs, 1));
-  mm.add('(max-width: 767px)', () => initScrub(refs, 2));
+  // Desktop/tablet: sequência completa em 200% de scroll. Mobile: metade dos
+  // frames (metade do payload) e pin mais curto — o vídeo avança mais rápido
+  // por centímetro de rolagem.
+  mm.add('(min-width: 768px)', () => initScrub(refs, 1, '+=200%'));
+  mm.add('(max-width: 767px)', () => initScrub(refs, 2, '+=120%'));
 }

@@ -25,8 +25,8 @@ const passos = [
 ];
 ---
 
-<section id="como-funciona" class="border-y border-line bg-bg-warm py-24 md:py-32">
-  <div class="mx-auto grid max-w-6xl gap-12 px-5 md:grid-cols-[1fr_1.3fr] md:gap-20 md:px-8">
+<section id="como-funciona" class="border-y border-line bg-bg-warm py-16 md:py-32">
+  <div class="mx-auto grid max-w-6xl gap-10 px-5 md:grid-cols-[1fr_1.3fr] md:gap-20 md:px-8">
     <div class="md:sticky md:top-32 md:self-start">
       <p class="mb-4 font-mono text-sm tracking-widest text-brand uppercase" data-reveal>
         Como funciona
@@ -41,7 +41,7 @@ const passos = [
     </div>
 
     {/* timeline: trilho cinza + linha laranja que preenche com o scroll */}
-    <ol class="relative flex flex-col gap-10">
+    <ol class="relative flex flex-col gap-8 md:gap-10">
       <span class="absolute top-4 bottom-4 left-6 w-0.5 -translate-x-1/2 bg-line" aria-hidden="true"
       ></span>
       <span
@@ -51,11 +51,11 @@ const passos = [
 
       {
         passos.map((p) => (
-          <li data-step class="relative grid grid-cols-[3rem_1fr] items-start gap-5 md:gap-8">
-            <span class="step-dot z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 border-line bg-bg font-mono text-sm font-bold text-muted transition-[background-color,border-color,color,box-shadow] duration-500">
+          <li data-step class="relative grid grid-cols-[2.5rem_1fr] items-start gap-4 md:grid-cols-[3rem_1fr] md:gap-8">
+            <span class="step-dot z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-line bg-bg font-mono text-sm font-bold text-muted transition-[background-color,border-color,color,box-shadow] duration-500 md:h-12 md:w-12">
               {p.numero}
             </span>
-            <div class="step-card -mt-2 rounded-2xl border border-line bg-bg p-7 transition-[border-color,background-color,box-shadow] duration-500 md:p-9">
+            <div class="step-card -mt-2 rounded-2xl border border-line bg-bg p-5 transition-[border-color,background-color,box-shadow] duration-500 md:p-9">
               <span class="step-icon inline-flex h-11 w-11 items-center justify-center rounded-xl bg-brand-soft text-brand transition-colors duration-500">
                 <svg
                   class="h-5 w-5"

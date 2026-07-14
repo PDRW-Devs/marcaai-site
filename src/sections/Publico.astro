@@ -42,9 +42,9 @@ const publicos = [
 ];
 ---
 
-<section class="overflow-hidden border-y border-line bg-bg-warm py-24 md:py-32">
+<section class="overflow-hidden border-y border-line bg-bg-warm py-16 md:py-32">
   {/* faixa cinética inclinada — tipografia gigante em movimento */}
-  <div class="kinetic-band mb-20 md:mb-24" aria-hidden="true">
+  <div class="kinetic-band mb-14 md:mb-24" aria-hidden="true">
     <div class="marquee-track flex w-max items-center gap-[0.6em] font-display leading-none font-bold tracking-tight text-white uppercase [font-size:clamp(2.6rem,6vw,5.5rem)]">
       {
         [0, 1].map(() => (
@@ -89,7 +89,7 @@ const publicos = [
       que não deixa agenda ociosa.
     </p>
 
-    <ul class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-6">
+    <ul class="mt-10 grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-6 md:mt-12">
       {
         publicos.map((p, i) => (
           <li
