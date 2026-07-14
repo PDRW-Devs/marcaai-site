@@ -3,13 +3,14 @@ import Button from '../components/Button.astro';
 ---
 
 {/* Hero pinado: o ScrollTrigger prende a seção enquanto o canvas faz o scrub
-    dos frames. No mobile a animação vira full-bleed (tela inteira) atrás do
-    texto; no desktop é a coluna da direita. Sem motion, poster estático. */}
-<section id="hero" class="relative flex min-h-[calc(100svh-4rem)] items-start overflow-hidden bg-bg md:min-h-[calc(100dvh-7rem)] md:items-center">
+    dos frames. No mobile o vídeo ocupa a tela inteira SOZINHO (nada por cima)
+    e o texto vem depois, abaixo; no desktop é a coluna da direita ao lado do
+    texto. Sem motion, poster estático. */}
+<section id="hero" class="relative overflow-hidden bg-bg md:flex md:min-h-[calc(100dvh-7rem)] md:items-center">
   <div
-    class="mx-auto grid w-full max-w-6xl items-center gap-10 px-5 py-8 md:grid-cols-2 md:gap-16 md:px-8 md:py-10"
+    class="mx-auto flex w-full max-w-6xl flex-col md:grid md:grid-cols-2 md:items-center md:gap-16 md:px-8 md:py-10"
   >
-    <div data-hero-overlay class="relative z-10">
+    <div data-hero-overlay class="order-2 px-5 pt-12 pb-16 md:order-none md:p-0">
       <p class="mb-4 font-mono text-sm tracking-widest text-brand uppercase">
         Atendimento · Agenda · IA
       </p>
@@ -27,8 +28,8 @@ import Button from '../components/Button.astro';
       </div>
     </div>
 
-    {/* mobile: cobre a seção inteira atrás do texto; md+: coluna quadrada */}
-    <div class="pointer-events-none absolute inset-0 md:pointer-events-auto md:relative md:inset-auto md:mx-auto md:aspect-square md:w-full md:max-w-[min(80vw,560px)]">
+    {/* mobile: primeiro na ordem, tela cheia só pro vídeo; md+: coluna quadrada */}
+    <div class="relative order-1 h-[calc(100svh-4rem)] w-full md:order-none md:mx-auto md:aspect-square md:h-auto md:max-w-[min(80vw,560px)]">
       <img
         data-hero-poster
         src="/frames/0001.webp"

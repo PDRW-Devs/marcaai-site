@@ -37,7 +37,7 @@ function setupCanvas(canvas: HTMLCanvasElement): CanvasRenderingContext2D {
   return ctx;
 }
 
-function initScrub(refs: HeroRefs, step: number, end: string): void {
+function initScrub(refs: HeroRefs, step: number, end: string, fadeOverlay: boolean): void {
   const { section, canvas, poster } = refs;
   const total = Math.floor(TOTAL_FRAMES / step);
   const seq = loadFrames(FRAMES_DIR, total, step);
@@ -87,8 +87,9 @@ function initScrub(refs: HeroRefs, step: number, end: string): void {
   });
 
   // Overlay: headline sobe/some suavemente conforme o scrub avança.
+  // Só no desktop — no mobile o texto vive DEPOIS do vídeo, não sobre ele.
   const overlay = section.querySelector('[data-hero-overlay]');
-  if (overlay) {
+  if (overlay && fadeOverlay) {
     gsap.to(overlay, {
       opacity: 0,
       y: -40,
@@ -127,6 +128,6 @@ export function initHeroScrollVideo(): void {
   // Desktop/tablet: sequência completa em 200% de scroll. Mobile: metade dos
   // frames (metade do payload) e pin mais curto — o vídeo avança mais rápido
   // por centímetro de rolagem.
-  mm.add('(min-width: 768px)', () => initScrub(refs, 1, '+=200%'));
-  mm.add('(max-width: 767px)', () => initScrub(refs, 2, '+=120%'));
+  mm.add('(min-width: 768px)', () => initScrub(refs, 1, '+=200%', true));
+  mm.add('(max-width: 767px)', () => initScrub(refs, 2, '+=120%', false));
 }
