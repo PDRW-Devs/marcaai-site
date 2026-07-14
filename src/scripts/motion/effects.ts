@@ -468,12 +468,25 @@ function initSystemTree(): void {
     // linha "viva" (tracejado corrente) quando o fluxo termina de montar
     tlFluxo.call(() => flow.classList.add('flow-live'), undefined, t + 0.6);
 
-    ScrollTrigger.create({
-      trigger: flow,
-      start: 'top 80%',
-      once: true,
-      onEnter: () => tlFluxo.play(),
-    });
+    // Desktop: o fluxo cabe numa linha, então toca inteiro ao entrar em cena.
+    // Mobile: os blocos empilham verticalmente e o fluxo é alto — a timeline
+    // vira scrub, formando cada bloco em ordem conforme a rolagem avança.
+    if (window.matchMedia('(max-width: 767px)').matches) {
+      ScrollTrigger.create({
+        animation: tlFluxo,
+        trigger: flow,
+        start: 'top 78%',
+        end: 'bottom 60%',
+        scrub: 0.4,
+      });
+    } else {
+      ScrollTrigger.create({
+        trigger: flow,
+        start: 'top 80%',
+        once: true,
+        onEnter: () => tlFluxo.play(),
+      });
+    }
   });
 }
 
