@@ -1,12 +1,34 @@
-﻿---
+---
 ---
 
-{/* Header fixo com efeito de vidro */}
+{/* Header fixo com efeito de vidro.
+    Mobile: hambúrguer à esquerda, logo centralizada e menu lateral de vidro
+    que desliza da esquerda (itens entram em stagger).
+    Desktop: logo à esquerda, nav à direita — inalterado. */}
 <header
   class="fixed inset-x-0 top-0 z-50 border-b border-line/60 bg-white/55 shadow-[0_1px_20px_-8px_rgba(17,24,39,0.12)] backdrop-blur-xl"
 >
-  <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 md:h-28 md:px-8">
-    <a href="/" class="flex items-center" aria-label="Marca AI — início">
+  <div class="relative mx-auto flex h-16 max-w-6xl items-center justify-between px-5 md:h-28 md:px-8">
+    {/* hambúrguer (só mobile) */}
+    <button
+      type="button"
+      data-menu-btn
+      aria-label="Abrir menu"
+      aria-expanded="false"
+      aria-controls="menu-mobile"
+      class="-ml-1 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-ink md:hidden"
+    >
+      <span class="menu-btn-lines" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </span>
+    </button>
+
+    {/* logo: centralizada no mobile, à esquerda no desktop */}
+    <a
+      href="/"
+      class="absolute left-1/2 flex -translate-x-1/2 items-center md:static md:translate-x-0"
+      aria-label="Marca AI — início"
+    >
       <img
         src="/logo-marca-ai.png"
         alt="Marca AI"
@@ -16,9 +38,206 @@
       />
     </a>
 
-    <nav aria-label="Principal" class="flex items-center gap-6 text-sm font-medium text-ink md:gap-10 md:text-base">
+    <nav aria-label="Principal" class="hidden items-center gap-10 font-medium text-ink md:flex">
       <a href="#maya" class="link-underline">Conheça a Maya</a>
-      <a href="#como-funciona" class="link-underline hidden sm:inline">Como funciona</a>
+      <a href="#como-funciona" class="link-underline">Como funciona</a>
     </nav>
   </div>
 </header>
+
+{/* ------- menu mobile: backdrop + painel de vidro lateral ------- */}
+<div data-menu-backdrop class="menu-backdrop md:hidden" aria-hidden="true"></div>
+
+<nav id="menu-mobile" data-menu-panel aria-label="Menu" class="menu-panel md:hidden">
+  {/* X no mesmo lugar do hambúrguer, pra fechar onde abriu */}
+  <button
+    type="button"
+    data-menu-close
+    aria-label="Fechar menu"
+    class="menu-close flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-ink"
+  >
+    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+      <path d="M6 6l12 12M18 6 6 18" />
+    </svg>
+  </button>
+
+  <p class="menu-item mt-14 font-mono text-xs tracking-[0.35em] text-brand uppercase">Menu</p>
+
+  <ul class="mt-6">
+    <li class="menu-item">
+      <a href="#hero" class="menu-link">
+        <span class="menu-num">01</span>
+        Início
+      </a>
+    </li>
+    <li class="menu-item">
+      <a href="#maya" class="menu-link">
+        <span class="menu-num">02</span>
+        Conheça a Maya
+      </a>
+    </li>
+    <li class="menu-item">
+      <a href="#como-funciona" class="menu-link">
+        <span class="menu-num">03</span>
+        Como funciona
+      </a>
+    </li>
+  </ul>
+
+  <div class="menu-item mt-auto">
+    <a
+      href="https://wa.me/5511981449961"
+      target="_blank"
+      rel="noopener"
+      class="btn-shine relative flex items-center justify-center gap-2.5 rounded-full bg-brand px-6 py-4 font-medium text-white shadow-[0_16px_36px_-14px_rgba(255,106,33,0.8)]"
+    >
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.7-1.2A9 9 0 1 0 12 3zM8.7 8.2c.2-.4.4-.4.6-.4h.5c.2 0 .4 0 .5.4l.7 1.7c.1.2 0 .4-.1.5l-.5.6c-.1.2-.1.3 0 .5.3.6 1.2 1.7 2.5 2.3.2.1.4.1.5-.1l.6-.7c.2-.2.3-.2.5-.1l1.6.8c.3.1.3.3.3.5-.1.6-.7 1.4-1.4 1.5-.6.1-1.4.2-3.5-.9-2.5-1.4-3.5-3.9-3.6-4.2-.1-.3-.5-1.3.3-2.4z"/>
+      </svg>
+      Falar no WhatsApp
+    </a>
+  </div>
+</nav>
+
+<style is:global>
+  /* ---- hambúrguer: três linhas que viram X quando o menu abre ---- */
+  .menu-btn-lines {
+    position: relative;
+    display: block;
+    width: 22px;
+    height: 16px;
+  }
+  .menu-btn-lines span {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+    transition:
+      top 0.4s var(--ease-out-expo),
+      transform 0.4s var(--ease-out-expo),
+      opacity 0.25s ease;
+  }
+  .menu-btn-lines span:nth-child(1) { top: 0; }
+  .menu-btn-lines span:nth-child(2) { top: 7px; }
+  .menu-btn-lines span:nth-child(3) { top: 14px; }
+  html.menu-open .menu-btn-lines span:nth-child(1) { top: 7px; transform: rotate(45deg); }
+  html.menu-open .menu-btn-lines span:nth-child(2) { opacity: 0; transform: translateX(-8px); }
+  html.menu-open .menu-btn-lines span:nth-child(3) { top: 7px; transform: rotate(-45deg); }
+
+  /* ---- backdrop escurecido com blur ---- */
+  .menu-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    background: rgba(17, 24, 39, 0.3);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  html.menu-open .menu-backdrop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* ---- painel de vidro que desliza da esquerda ---- */
+  .menu-panel {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 70;
+    display: flex;
+    flex-direction: column;
+    width: min(82vw, 340px);
+    padding: calc(0.625rem + env(safe-area-inset-top)) 1.5rem
+      calc(1.5rem + env(safe-area-inset-bottom));
+    background: linear-gradient(
+      165deg,
+      rgba(255, 255, 255, 0.88) 0%,
+      rgba(255, 247, 237, 0.78) 100%
+    );
+    backdrop-filter: blur(26px) saturate(1.5);
+    -webkit-backdrop-filter: blur(26px) saturate(1.5);
+    border-right: 1px solid rgba(255, 255, 255, 0.55);
+    box-shadow: 0 24px 90px -20px rgba(17, 24, 39, 0.45);
+    transform: translateX(-108%);
+    transition: transform 0.6s var(--ease-out-expo);
+    will-change: transform;
+  }
+  html.menu-open .menu-panel {
+    transform: translateX(0);
+  }
+  .menu-close {
+    margin-left: -0.25rem;
+  }
+
+  /* ---- itens: entram em cascata depois que o painel chega ---- */
+  .menu-panel .menu-item {
+    opacity: 0;
+    transform: translateX(-20px);
+    transition:
+      opacity 0.4s ease,
+      transform 0.55s var(--ease-out-expo);
+  }
+  html.menu-open .menu-panel .menu-item {
+    opacity: 1;
+    transform: none;
+  }
+  html.menu-open .menu-panel .menu-item:nth-of-type(1) { transition-delay: 0.1s; }
+  html.menu-open .menu-panel ul .menu-item:nth-child(1) { transition-delay: 0.16s; }
+  html.menu-open .menu-panel ul .menu-item:nth-child(2) { transition-delay: 0.22s; }
+  html.menu-open .menu-panel ul .menu-item:nth-child(3) { transition-delay: 0.28s; }
+  html.menu-open .menu-panel > div.menu-item { transition-delay: 0.36s; }
+
+  .menu-link {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 1rem 0.25rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    transition: color 0.25s ease, padding-left 0.35s var(--ease-out-expo);
+  }
+  .menu-link:active,
+  .menu-link:hover {
+    color: var(--brand);
+    padding-left: 0.625rem;
+  }
+  .menu-num {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--brand);
+  }
+</style>
+
+<script>
+  // Abre/fecha o menu lateral mobile — estado vive na classe .menu-open do <html>
+  const html = document.documentElement;
+  const btn = document.querySelector<HTMLButtonElement>('[data-menu-btn]');
+  const panel = document.querySelector<HTMLElement>('[data-menu-panel]');
+  const backdrop = document.querySelector<HTMLElement>('[data-menu-backdrop]');
+  const closeBtn = document.querySelector<HTMLButtonElement>('[data-menu-close]');
+
+  const setOpen = (open: boolean) => {
+    html.classList.toggle('menu-open', open);
+    btn?.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+  };
+
+  btn?.addEventListener('click', () => setOpen(!html.classList.contains('menu-open')));
+  closeBtn?.addEventListener('click', () => setOpen(false));
+  backdrop?.addEventListener('click', () => setOpen(false));
+  panel?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setOpen(false);
+  });
+</script>
